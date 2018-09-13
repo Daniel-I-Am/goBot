@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 	"strings"
+	"unicode"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -66,6 +67,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
+func stripWhitespace(str string) {
+	strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+		  return -1
+		}
+		return r
+	  }, str)
+}
+
 func roll(content string) string {
-	return "You requested" + content
+	return "You requested '" + content[len(prefix)+4:] + "'"
 }
