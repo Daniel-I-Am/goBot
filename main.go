@@ -76,7 +76,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, roll(m.Content))
 	}
 	if strings.HasPrefix(m.Content, prefix + "join") {
-		joinUserVoiceChannel(s, m.Author.ID)
+		out, err := joinUserVoiceChannel(s, m.Author.ID)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, err.Error())
+		} else {
+			fmt.Println("out", out)
+		}
 	}
 }
 
