@@ -10,11 +10,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+const prefix string = "!"
 var token string
 var BotID string
 
 func init() {
-
 	flag.StringVar(&token, "t", "", "Bot Token")
 	flag.Parse()
 }
@@ -60,11 +60,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
+	if m.Content == prefix + "roll" {
+		s.ChannelMessageSend(m.ChannelID, roll())
 	}
 	// If the message is "pong" reply with "Ping!"
 	if m.Content == "pong" {
 		s.ChannelMessageSend(m.ChannelID, "Ping!")
 	}
+}
+
+func roll() string {
+	return "NYI"
 }
