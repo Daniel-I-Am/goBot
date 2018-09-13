@@ -8,21 +8,22 @@ import (
 	"syscall"
 	"strings"
 	"unicode"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 const prefix string = "!"
-var token string
+var tok string
 var BotID string
 
 func init() {
-	flag.StringVar(&token, "t", "", "Bot Token")
+	flag.StringVar(&tok, "t", "", "Bot tok")
 	flag.Parse()
 }
 
 func main() {
-	dg, err := discordgo.New("Bot " + token)
+	dg, err := discordgo.New("Bot " + tok)
 	checkError(err)
 	user, err := dg.User("@me")
 	checkError(err)
@@ -77,5 +78,6 @@ func stripWhitespace(str string) string {
 }
 
 func roll(content string) string {
-	return "You requested '" + stripWhitespace(content[len(prefix)+4:]) + "'"
+	//input := stripWhitespace(content[len(prefix)+4:])
+	return strconv.Itoa(123)
 }
