@@ -113,7 +113,7 @@ func parseRoll(input string) string {
 	diceCount, _ := strconv.Atoi(match[1])
 	diceSize, _ := strconv.Atoi(match[2])
 	for i := 0; i < diceCount; i++ {
-		rn := rand.Intn(diceSize)
+		rn := rand.Intn(diceSize) + 1 //+1.... 0-indexed
 		toRet += strconv.Itoa(rn) + "+"
 	}
 	toRet = toRet[:len(toRet)-1]
