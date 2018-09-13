@@ -67,8 +67,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func stripWhitespace(str string) {
-	strings.Map(func(r rune) rune {
+func stripWhitespace(str string) string {
+	return strings.Map(func(r rune) rune {
 		if unicode.IsSpace(r) {
 		  return -1
 		}
@@ -77,5 +77,5 @@ func stripWhitespace(str string) {
 }
 
 func roll(content string) string {
-	return "You requested '" + content[len(prefix)+4:] + "'"
+	return "You requested '" + stripWhitespace(content[len(prefix)+4:]) + "'"
 }
