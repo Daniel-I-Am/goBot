@@ -1,16 +1,23 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
-	
+
 	"github.com/bwmarrin/discordgo"
 )
 
-const token string = "NDQ0MzMzNzgyMjk2ODIxNzkw.DilAYQ.592mvqUviAGXD22X3yKusgojTog"
+var token string
 var BotID string
+
+func init() {
+
+	flag.StringVar(&token, "t", "", "Bot Token")
+	flag.Parse()
+}
 
 func main() {
 	dg, err := discordgo.New("Bot " + token)
