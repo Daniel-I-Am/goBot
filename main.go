@@ -9,6 +9,8 @@ import (
 	"strings"
 	"unicode"
 	"strconv"
+	"regexp"
+	"math/rand"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -78,6 +80,26 @@ func stripWhitespace(str string) string {
 }
 
 func roll(content string) string {
-	//input := stripWhitespace(content[len(prefix)+4:])
-	return strconv.Itoa(123)
+	input := stripWhitespace(content[len(prefix)+4:])
+	regex := regexp.MustCompile("(?P<pre>.*?)(?P<roll>\\d+d\\d+)(?P<suf>.*)")
+	for regex.MatchString(input) == true {
+		match := regex.FindStringSubmatch(input)
+		input = match[1] + parseRoll(match[2]) + match[3]
+	}
+	return input
+}
+
+func parseRoll(input string) string {
+	regex := regexp.MustCompile("(?P<a>\\d+)d(?P<b>\\d+)")
+	if !regex.MatchString(input) { return "" }
+	match := regex.FindStringSubmatch(input)
+	toRet := "(` "
+	diceCount, _ := strconv.Atoi(match[1])
+	diceSize, _ := strconv.Atoi(match[2])
+	for i := 0; i < diceCount; i++ {
+		rn := rand.Intn(diceSize)
+		toRet += strconv.Itoa(rn) + " "
+	}
+	toRet += "`)"
+	return toRet
 }
