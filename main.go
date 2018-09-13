@@ -86,6 +86,7 @@ func roll(content string) string {
 		match := regex.FindStringSubmatch(input)
 		input = match[1] + parseRoll(match[2]) + match[3]
 	}
+	// now that we have the dice rolled, we need to calculate the result
 	return input
 }
 
@@ -93,13 +94,14 @@ func parseRoll(input string) string {
 	regex := regexp.MustCompile("(?P<a>\\d+)d(?P<b>\\d+)")
 	if !regex.MatchString(input) { return "" }
 	match := regex.FindStringSubmatch(input)
-	toRet := "(` "
+	toRet := "( "
 	diceCount, _ := strconv.Atoi(match[1])
 	diceSize, _ := strconv.Atoi(match[2])
 	for i := 0; i < diceCount; i++ {
 		rn := rand.Intn(diceSize)
-		toRet += strconv.Itoa(rn) + " "
+		toRet += strconv.Itoa(rn) + " + "
 	}
-	toRet += "`)"
+	toRet = toRet[:len(toRet)-3]
+	toRet += " )"
 	return toRet
 }
