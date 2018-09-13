@@ -14,16 +14,16 @@ import (
 )
 
 const prefix string = "!"
-var tok string
+var token string
 var BotID string
 
 func init() {
-	flag.StringVar(&tok, "t", "", "Bot tok")
+	flag.StringVar(&token, "t", "", "Bot token")
 	flag.Parse()
 }
 
 func main() {
-	dg, err := discordgo.New("Bot " + tok)
+	dg, err := discordgo.New("Bot " + token)
 	checkError(err)
 	user, err := dg.User("@me")
 	checkError(err)
