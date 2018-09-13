@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -25,7 +26,7 @@ func main() {
 	user, err := dg.User("@me")
 	checkError(err)
 	BotID = user.ID
-	fmt.Println("Bot is running as'", user.Username, "'")
+	fmt.Println("Bot is running as '" + user.Username + "'")
 
 	dg.AddHandler(messageCreate)
 
@@ -60,15 +61,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	// If the message is "ping" reply with "Pong!"
-	if m.Content == prefix + "roll" {
-		s.ChannelMessageSend(m.ChannelID, roll())
-	}
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
+	if strings.HasPrefix(m.Content, prefix + "roll") {
+		s.ChannelMessageSend(m.ChannelID, roll(m.Content))
 	}
 }
 
-func roll() string {
-	return "NYI"
+func roll(content string) string {
+	return "You requested" + content
 }
