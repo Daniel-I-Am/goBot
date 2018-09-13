@@ -1,1 +1,1 @@
-go run main.go roll.go -t "<TOKEN HERE>"
+go run main.go roll.go -t "<TOKEN CHANGED>"
