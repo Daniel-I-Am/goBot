@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"errors"
 
 	"github.com/bwmarrin/discordgo"
@@ -29,5 +30,6 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 }
 
 func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
+	fmt.Println("Leaving session")
 	voiceSession.Close()
 }

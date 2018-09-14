@@ -68,8 +68,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	defer sendError(s, m.ChannelID)
-	// If the message is "ping" reply with "Pong!"
+	defer sendError(s, m.ChannelID, err)
 	if strings.HasPrefix(m.Content, prefix + "roll") {
 		s.ChannelMessageSend(m.ChannelID, roll(m.Content))
 	}
@@ -86,7 +85,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func sendError(ses *discordgo.Session, cid string) {
+func sendError(ses *discordgo.Session, cid string, err error) {
+	fmt.Println(err)
 	if err := recover(); err != nil {
 		ses.ChannelMessageSend(cid, "Sorry, something went wrong.\nhttps://media.makeameme.org/created/you-caused-a-5b9ab5.jpg")
 	}
