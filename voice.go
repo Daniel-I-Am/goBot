@@ -31,7 +31,7 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 
 func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
 	fmt.Println("Leaving session")
-	voiceSession.Close()
+	voiceSession.Disconnect()
 }
 
 func playVideo(session *discordgo.Session, content string) {
