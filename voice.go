@@ -15,7 +15,8 @@ func joinUserVoiceChannel(session *discordgo.Session, userID string) (*discordgo
 	}
 
 	// Join the user's channel and start unmuted and deafened.
-	return session.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, true)
+	ses, err := session.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, true)
+	return ses, err
 }
 
 func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.VoiceState, error) {
@@ -30,7 +31,7 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 }
 
 func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
-	fmt.Println("Leaving session")
+	fmt.Println("Leaving voice session")
 	voiceSession.Disconnect()
 }
 
