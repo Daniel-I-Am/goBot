@@ -15,8 +15,11 @@ import (
 )
 
 const prefix string = "!"
+
+var voiceSession *discordgo.VoiceConnection
 var Token string
 var BotID string
+var err error
 
 func init() {
 	flag.StringVar(&Token, "t", "", "Bot Token")
@@ -72,12 +75,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, roll(m.Content))
 	}
 	if strings.HasPrefix(m.Content, prefix + "join") {
-		out, err := joinUserVoiceChannel(s, m.Author.ID)
+		voiceSession, err = joinUserVoiceChannel(s, m.Author.ID)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, err.Error())
 		} else {
-			fmt.Println("out", out)
+			fmt.Println("out", voiceSession)
 		}
+	}
+	if strings.HasPrefix(m.Content, prefix+"leave") {
+		leaveVoiceChannel(voiceSession)
 	}
 }
 
@@ -94,8 +100,8 @@ func joinUserVoiceChannel(session *discordgo.Session, userID string) (*discordgo
 		return nil, err
 	}
 
-    // Join the user's channel and start unmuted and deafened.
-    return session.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, true)
+	// Join the user's channel and start unmuted and deafened.
+	return session.ChannelVoiceJoin(vs.GuildID, vs.ChannelID, false, true)
 }
 
 func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.VoiceState, error) {
@@ -107,4 +113,8 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 		}
 	}
 	return nil, errors.New("Could not find user's voice state")
+}
+
+func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
+	voiceSession.Close()
 }
