@@ -1,1 +1,0 @@
-go run main.go roll.go voice.go -t "<TOKEN HERE>"
