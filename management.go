@@ -17,7 +17,9 @@ func min(a int, b int) int {
 func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
 	userPermissions, _ := session.UserChannelPermissions(m.Author.ID, m.ChannelID)
 	userPermissionsB := strconv.FormatInt(int64(userPermissions), 2)
-	if (!(string([]rune(userPermissionsB)[15:16]) == "1")) {
+	if (!(string([]rune(userPermissionsB)[13:14]) == "1")) {
+		// missing permission
+		noPermission(session, m, "clear")
 		return
 	}
 	content := m.Content
@@ -25,12 +27,12 @@ func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
 	if (!regex.MatchString(content)) { return }
 	match := regex.FindString(content)
 	matchInt, _ := strconv.ParseFloat(match, 64)
-	clearCount := int(matchInt)
+	clearCount := int(matchInt) + 1 // 1 since we need 
 	for n := 0; n<clearCount; n+=100 {
-		fmt.Println("Clearing",n,"to",min(clearCount,n+100))
-		countLeft := clearCount-n
+		fmt.Println("Clearing message",n,"to",min(clearCount,n+100))
+		countLeft := min(clearCount-n, 100)
 		fmt.Println("That is",countLeft,"messages")
-		messages, _ := session.ChannelMessages(m.ChannelID, int(min(countLeft, 100)), "", "", "")
+		messages, _ := session.ChannelMessages(m.ChannelID, countLeft, "", "", "")
 		l := len(messages)
 		messageIDs := make([]string, l)
 		for i := 0; i < l; i++ {
@@ -38,4 +40,7 @@ func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		session.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
 	}
+	messageTag := "messages"
+	if clearCount == 2 { messageTag = "message"}
+	session.ChannelMessageSend(m.ChannelID, "Cleared " + strconv.Itoa(clearCount - 1) + " " + messageTag + " requested by <@" + m.Author.ID + ">")
 }
