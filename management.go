@@ -1,11 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
-	"math"
 	"regexp"
 	"github.com/bwmarrin/discordgo"
 )
+
+func min(a int, b int) int {
+	if a > b {
+		return b
+	}
+	return a
+}
 
 func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
 	userPermissions, _ := session.UserChannelPermissions(m.Author.ID, m.ChannelID)
@@ -20,8 +27,10 @@ func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
 	matchInt, _ := strconv.ParseFloat(match, 64)
 	clearCount := int(matchInt)
 	for n := 0; n<clearCount; n+=100 {
-		countLeft := float64(clearCount-n)
-		messages, _ := session.ChannelMessages(m.ChannelID, int(math.Min(countLeft, 100)), "", "", "")
+		fmt.Println("Clearing",n,"to",min(clearCount,n+100))
+		countLeft := clearCount-n
+		fmt.Println("That is",countLeft,"messages")
+		messages, _ := session.ChannelMessages(m.ChannelID, int(min(countLeft, 100)), "", "", "")
 		l := len(messages)
 		messageIDs := make([]string, l)
 		for i := 0; i < l; i++ {
