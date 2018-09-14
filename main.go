@@ -67,8 +67,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-
-	defer sendError(s, m.ChannelID, err)
+	if strings.HasPrefix(m.Content, prefix) {
+		fmt.Println("Command run by '" + m.Author.Username + "':", m.Content)
+	} else {
+		return //not a command
+	}
+	defer sendError(s, m.ChannelID)
 	if strings.HasPrefix(m.Content, prefix + "roll") {
 		s.ChannelMessageSend(m.ChannelID, roll(m.Content))
 	}
@@ -91,8 +95,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func sendError(ses *discordgo.Session, cid string, err error) {
-	fmt.Println(err)
+func sendError(ses *discordgo.Session, cid string) {
+	//fmt.Println(err)
 	if err := recover(); err != nil {
 		ses.ChannelMessageSend(cid, "Sorry, something went wrong.\nhttps://media.makeameme.org/created/you-caused-a-5b9ab5.jpg")
 	}
