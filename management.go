@@ -18,12 +18,15 @@ func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
 	if (!regex.MatchString(content)) { return }
 	match := regex.FindString(content)
 	matchInt, _ := strconv.ParseFloat(match, 64)
-	clearCount := math.Min(matchInt, 100)
-	messages, _ := session.ChannelMessages(m.ChannelID, int(clearCount), "", "", "")
-	var messageIDs []string
-	l := len(messages)
-	for i := 0; i < l; i++ {
-		messageIDs[i] = messages[i].ID
+	clearCount := int(matchInt)
+	for n := 0; n<clearCount; n+=100 {
+		countLeft := float64(clearCount-n)
+		messages, _ := session.ChannelMessages(m.ChannelID, int(math.Min(countLeft, 100)), "", "", "")
+		l := len(messages)
+		messageIDs := make([]string, l)
+		for i := 0; i < l; i++ {
+			messageIDs[i] = messages[i].ID
+		}
+		session.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
 	}
-	session.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
 }
