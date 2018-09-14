@@ -26,12 +26,12 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 			}
 		}
 	}
-	return nil, errors.New("Could not find user's voice state")
+	return nil, errors.New("I cannot see your voice channel, please join a voice channel I can see")
 }
 
 func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
 	fmt.Println("Leaving session")
-	voiceSession.Close()
+	voiceSession.Disconnect()
 }
 
 func playVideo(session *discordgo.Session, content string) {
