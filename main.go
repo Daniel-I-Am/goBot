@@ -42,7 +42,7 @@ func main() {
 		return
 	}
 	// Set up some last things
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano()) // seed RNG with time 
 
 	// Wait here until CTRL-C or other term signal is received.
 	fmt.Println("Bot is now running. Press CTRL-C to exit.")
@@ -80,8 +80,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			fmt.Println("out", voiceSession)
 		}
 	}
-	if strings.HasPrefix(m.Content, prefix+"leave") {
+	if strings.HasPrefix(m.Content, prefix + "leave") {
 		leaveVoiceChannel(voiceSession)
+	}
+	if strings.HasPrefix(m.Content, prefix + "play") {
+		playVideo(s, m.Content)
+	}
+	if strings.HasPrefix(m.Content, prefix + "clear") {
+		clearMessages(s, m.Content)
 	}
 }
 

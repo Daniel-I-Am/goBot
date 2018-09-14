@@ -33,3 +33,7 @@ func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
 	fmt.Println("Leaving session")
 	voiceSession.Close()
 }
+
+func playVideo(session *discordgo.Session, content string) {
+	return
+}
