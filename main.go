@@ -87,7 +87,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		playVideo(s, m.Content)
 	}
 	if strings.HasPrefix(m.Content, prefix + "clear") {
-		clearMessages(s, m.Content)
+		clearMessages(s, m)
 	}
 }
 
