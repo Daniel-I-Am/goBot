@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"errors"
+	"io"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jonas747/dca"
+	"github.com/rylio/ytdl"
 )
 
 func joinUserVoiceChannel(session *discordgo.Session, userID string) (*discordgo.VoiceConnection, error) {
@@ -30,11 +33,65 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 	return nil, errors.New("I cannot see your voice channel, please join a voice channel I can see")
 }
 
-func leaveVoiceChannel(voiceSession *discordgo.VoiceConnection) {
+func leaveVoiceChannel() {
 	fmt.Println("Leaving voice session")
 	voiceSession.Disconnect()
 }
 
-func playVideo(session *discordgo.Session, content string) {
-	return
+func playVideo(session *discordgo.Session, m *discordgo.MessageCreate) {
+	print("Checking URL")
+	videoURL := m.Content[len(prefix)+5:]
+	print("Found '" + videoURL + "'")
+	if voiceSession != nil {
+		print("Voice Session not ready")
+		voiceSession, err = joinUserVoiceChannel(session, m.Author.ID)
+		if err != nil {
+			print("join channel failed")
+			return
+		}
+		print("join channel succeeded")
+	}
+	print("Is in voice channel")
+	// Change these accordingly
+	options := dca.StdEncodeOptions
+	options.RawOutput = true
+	options.Bitrate = 96
+	options.Application = "lowdelay"
+	print("Set option up")
+
+	videoInfo, err := ytdl.GetVideoInfo(videoURL)
+	if err != nil {
+		fmt.Println("Error in 1")
+	}
+	print("Got vid info")
+
+	format := videoInfo.Formats.Extremes(ytdl.FormatAudioBitrateKey, true)[0]
+	downloadURL, err := videoInfo.GetDownloadURL(format)
+	if err != nil {
+		fmt.Println("Error in 2")
+	}
+	print("Got download URL")
+
+	encodingSession, err := dca.EncodeFile(downloadURL.String(), options)
+	if err != nil {
+		fmt.Println("Error in 3")
+	}
+	print("Encoded file")
+	defer encodingSession.Cleanup()
+	print("Set up cleanup")
+		
+	done := make(chan error)    
+	print("done")
+	dca.NewStream(encodingSession, voiceSession, done)
+	print("new stream")
+	someErr := <- done
+	print("someErr")
+	if someErr != nil && someErr != io.EOF {
+		fmt.Println("Error in 4")
+	}
+	print("Finished")
+}
+
+func print(m string) {
+	fmt.Println(m)
 }

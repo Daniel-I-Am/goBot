@@ -78,10 +78,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 	if strings.HasPrefix(m.Content, prefix + "leave") {
-		leaveVoiceChannel(voiceSession)
+		leaveVoiceChannel()
 	}
 	if strings.HasPrefix(m.Content, prefix + "play") {
-		playVideo(s, m.Content)
+		playVideo(s, m)
 	}
 	if strings.HasPrefix(m.Content, prefix + "clear") {
 		clearMessages(s, m)
