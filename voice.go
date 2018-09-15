@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"errors"
 	"io"
 
@@ -9,6 +8,8 @@ import (
 	"github.com/jonas747/dca"
 	"github.com/rylio/ytdl"
 )
+
+var volume int
 
 func joinUserVoiceChannel(session *discordgo.Session, userID string) (*discordgo.VoiceConnection, error) {
 	// Find a user's current voice channel
@@ -34,64 +35,60 @@ func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.V
 }
 
 func leaveVoiceChannel() {
-	fmt.Println("Leaving voice session")
+	log("Leaving voice session")
 	voiceSession.Disconnect()
 }
 
 func playVideo(session *discordgo.Session, m *discordgo.MessageCreate) {
-	print("Checking URL")
+	log("Checking URL")
 	videoURL := m.Content[len(prefix)+5:]
-	print("Found '" + videoURL + "'")
+	log("Found '" + videoURL + "'")
 	if voiceSession != nil {
-		print("Voice Session not ready")
+		log("Voice Session not ready")
 		voiceSession, err = joinUserVoiceChannel(session, m.Author.ID)
 		if err != nil {
-			print("join channel failed")
+			log("join channel failed")
 			return
 		}
-		print("join channel succeeded")
+		log("join channel succeeded")
 	}
-	print("Is in voice channel")
+	log("Is in voice channel")
 	// Change these accordingly
 	options := dca.StdEncodeOptions
 	options.RawOutput = true
 	options.Bitrate = 96
 	options.Application = "lowdelay"
-	print("Set option up")
+	log("Set option up")
 
 	videoInfo, err := ytdl.GetVideoInfo(videoURL)
 	if err != nil {
-		fmt.Println("Error in 1")
+		log("Error in 1")
 	}
-	print("Got vid info")
+	log("Got vid info")
 
 	format := videoInfo.Formats.Extremes(ytdl.FormatAudioBitrateKey, true)[0]
 	downloadURL, err := videoInfo.GetDownloadURL(format)
 	if err != nil {
-		fmt.Println("Error in 2")
+		log("Error in 2")
 	}
-	print("Got download URL")
+	log("Got download URL")
 
 	encodingSession, err := dca.EncodeFile(downloadURL.String(), options)
 	if err != nil {
-		fmt.Println("Error in 3")
+		log("Error in 3")
 	}
-	print("Encoded file")
+	log("Encoded file")
 	defer encodingSession.Cleanup()
-	print("Set up cleanup")
+	log("Set up cleanup")
 		
 	done := make(chan error)    
-	print("done")
+	log("done")
 	dca.NewStream(encodingSession, voiceSession, done)
-	print("new stream")
+	log("new stream")
 	someErr := <- done
-	print("someErr")
+	log("someErr")
 	if someErr != nil && someErr != io.EOF {
-		fmt.Println("Error in 4")
+		log("Error in 4")
 	}
-	print("Finished")
-}
-
-func print(m string) {
-	fmt.Println(m)
+	log("Finished")
 }

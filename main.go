@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -31,21 +30,21 @@ func main() {
 	user, err := dg.User("@me")
 	checkError(err)
 	BotID = user.ID
-	fmt.Println("Bot is running as '" + user.Username + "'")
+	log("Bot is running as '" + user.Username + "'")
 
 	dg.AddHandler(messageCreate)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("error opening connection,", err)
+		log("error opening connection,", err.Error())
 		return
 	}
 	// Set up some last things
 	rand.Seed(time.Now().UnixNano()) // seed RNG with time 
 
 	// Wait here until CTRL-C or other term signal is received.
-	fmt.Println("Bot is now running. Press CTRL-C to exit.")
+	log("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -61,7 +60,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	if strings.HasPrefix(m.Content, prefix) {
-		fmt.Println("Command run by '" + m.Author.Username + "':", m.Content)
+		log("Command run by '" + m.Author.Username + "':", m.Content)
 	} else {
 		return //not a command
 	}
@@ -74,7 +73,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, err.Error())
 		} else {
-			fmt.Println("out", voiceSession)
+			log("Connected to voice session")
 		}
 	}
 	if strings.HasPrefix(m.Content, prefix + "leave") {
