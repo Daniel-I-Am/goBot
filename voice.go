@@ -41,6 +41,10 @@ func leaveVoiceChannel() {
 
 func playVideo(session *discordgo.Session, m *discordgo.MessageCreate) {
 	log("Checking URL")
+	if len(m.Content) < len(prefix) + 5 {
+		log("No URL specified")
+		return
+	}
 	videoURL := m.Content[len(prefix)+5:]
 	log("Found '" + videoURL + "'")
 	if voiceSession != nil {

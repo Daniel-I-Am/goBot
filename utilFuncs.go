@@ -16,7 +16,7 @@ func checkError(err error) {
 }
 
 func sendError(ses *discordgo.Session, cid string) {
-	logErr(err.Error())
+	//logErr(err.Error())
 	if err := recover(); err != nil {
 		ses.ChannelMessageSend(cid, "Sorry, something went wrong.\nhttps://media.makeameme.org/created/you-caused-a-5b9ab5.jpg")
 	}
