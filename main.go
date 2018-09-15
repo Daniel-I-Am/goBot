@@ -15,6 +15,7 @@ import (
 const prefix string = "!"
 
 var voiceSession *discordgo.VoiceConnection
+var session *discordgo.Session
 var Token string
 var BotID string
 var err error
@@ -33,7 +34,6 @@ func main() {
 	log("Bot is running as '" + user.Username + "'")
 
 	dg.AddHandler(messageCreate)
-
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
 	if err != nil {
@@ -53,10 +53,11 @@ func main() {
 	dg.Close()
 }
 
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func messageCreate(ses *discordgo.Session, m *discordgo.MessageCreate) {
+	session = ses
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
-	if m.Author.ID == s.State.User.ID {
+	if m.Author.ID == session.State.User.ID {
 		return
 	}
 	if strings.HasPrefix(m.Content, prefix) {
@@ -64,14 +65,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	} else {
 		return //not a command
 	}
-	defer sendError(s, m.ChannelID)
+	defer sendError(m.ChannelID)
 	if strings.HasPrefix(m.Content, prefix + "roll") {
-		s.ChannelMessageSend(m.ChannelID, roll(m.Content))
+		session.ChannelMessageSend(m.ChannelID, roll(m.Content))
 	}
 	if strings.HasPrefix(m.Content, prefix + "join") {
-		voiceSession, err = joinUserVoiceChannel(s, m.Author.ID)
+		voiceSession, err = joinUserVoiceChannel(m.Author.ID)
 		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, err.Error())
+			session.ChannelMessageSend(m.ChannelID, err.Error())
 		} else {
 			log("Connected to voice session")
 		}
@@ -80,9 +81,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		leaveVoiceChannel()
 	}
 	if strings.HasPrefix(m.Content, prefix + "play") {
-		playVideo(s, m)
+		playVideo(m)
 	}
 	if strings.HasPrefix(m.Content, prefix + "clear") {
-		clearMessages(s, m)
+		clearMessages(m)
+	}
+	if strings.HasPrefix(m.Content, prefix + "friend") {
+		session.RelationshipFriendRequestSend(m.Author.ID)
 	}
 }

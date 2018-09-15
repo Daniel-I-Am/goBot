@@ -11,9 +11,9 @@ import (
 
 var volume int
 
-func joinUserVoiceChannel(session *discordgo.Session, userID string) (*discordgo.VoiceConnection, error) {
+func joinUserVoiceChannel(userID string) (*discordgo.VoiceConnection, error) {
 	// Find a user's current voice channel
-	vs, err := findUserVoiceState(session, userID)
+	vs, err := findUserVoiceState(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func joinUserVoiceChannel(session *discordgo.Session, userID string) (*discordgo
 	return ses, err
 }
 
-func findUserVoiceState(session *discordgo.Session, userid string) (*discordgo.VoiceState, error) {
+func findUserVoiceState(userid string) (*discordgo.VoiceState, error) {
 	for _, guild := range session.State.Guilds {
 		for _, vs := range guild.VoiceStates {
 			if vs.UserID == userid {
@@ -39,7 +39,7 @@ func leaveVoiceChannel() {
 	voiceSession.Disconnect()
 }
 
-func playVideo(session *discordgo.Session, m *discordgo.MessageCreate) {
+func playVideo(m *discordgo.MessageCreate) {
 	log("Checking URL")
 	if len(m.Content) < len(prefix) + 5 {
 		log("No URL specified")
@@ -49,7 +49,7 @@ func playVideo(session *discordgo.Session, m *discordgo.MessageCreate) {
 	log("Found '" + videoURL + "'")
 	if voiceSession != nil {
 		log("Voice Session not ready")
-		voiceSession, err = joinUserVoiceChannel(session, m.Author.ID)
+		voiceSession, err = joinUserVoiceChannel(m.Author.ID)
 		if err != nil {
 			log("join channel failed")
 			return

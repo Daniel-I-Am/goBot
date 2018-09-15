@@ -13,8 +13,8 @@ func min(a int, b int) int {
 	return a
 }
 
-func clearMessages(session *discordgo.Session, m *discordgo.MessageCreate) {
-	if !checkPermission(session, m, 13, "clear") { return }
+func clearMessages(m *discordgo.MessageCreate) {
+	if !checkPermission(m, 13, "clear") { return }
 	content := m.Content
 	regex := regexp.MustCompile("\\d+")
 	if (!regex.MatchString(content)) { return }

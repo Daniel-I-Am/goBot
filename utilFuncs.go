@@ -15,14 +15,14 @@ func checkError(err error) {
 	}
 }
 
-func sendError(ses *discordgo.Session, cid string) {
+func sendError(cid string) {
 	//logErr(err.Error())
 	if err := recover(); err != nil {
-		ses.ChannelMessageSend(cid, "Sorry, something went wrong.\nhttps://media.makeameme.org/created/you-caused-a-5b9ab5.jpg")
+		session.ChannelMessageSend(cid, "Sorry, something went wrong.\nhttps://media.makeameme.org/created/you-caused-a-5b9ab5.jpg")
 	}
 }
 
-func noPermission(session *discordgo.Session, m *discordgo.MessageCreate, command string) {
+func noPermission(m *discordgo.MessageCreate, command string) {
 	message, _ := session.ChannelMessageSend(m.ChannelID, "You do not have the permission to use the `" + command + "` command")
 	session.ChannelTyping(m.ChannelID)
 	time.Sleep(5 * time.Second)
@@ -30,12 +30,12 @@ func noPermission(session *discordgo.Session, m *discordgo.MessageCreate, comman
 	session.ChannelMessageDelete(m.ChannelID, m.ID)
 }
 
-func checkPermission(session *discordgo.Session, m *discordgo.MessageCreate, n int, command string) bool {
+func checkPermission(m *discordgo.MessageCreate, n int, command string) bool {
 	userPermissions, _ := session.UserChannelPermissions(m.Author.ID, m.ChannelID)
 	userPermissionsB := strconv.FormatInt(int64(userPermissions), 2)
 	if (!(string([]rune(userPermissionsB)[n:n+1]) == "1")) {
 		// missing permission
-		noPermission(session, m, command)
+		noPermission(m, command)
 		return false
 	}
 	return true
